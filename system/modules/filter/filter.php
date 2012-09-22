@@ -1,19 +1,14 @@
 <?php
 
-class Filter implements SystemModule {
+class Filter extends SystemModule {
     public static $filter;
 
     public static function init() {
-        require_once ('container/CFilter.php');
-        require_once ('container/CFilterField.php');
-        require_once ('interface/FilterInterfaceFilter.php');
-        require_once ('model/FilterModelFilter.php');
-        self::loadConfig();
+        parent::init();
         self::$filter = new FilterInterfaceFilter();
     }
 
-    public static function loadConfig() {
-    }
+
 }
 
 ?>

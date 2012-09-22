@@ -132,6 +132,23 @@ class Core {
             }
         }
     }
+    
+    public static function includeSystemModuleFiles($dir) {
+        if (strstr($dir, "view") !== false OR strstr($dir, "form") !== false)
+            return;
+        if (strstr($dir, APPROOT) === false) {
+            $dir = MODROOT . $dir;
+        }
+        foreach (new DirectoryIterator($dir) as $file) {
+            if (!$file->isDot()) {
+                if ($file->isDir())
+                    self::includeModuleFiles($file->getPathname());
+                else {
+                    require_once $file->getPathname();
+                }
+            }
+        }
+    }
 
 }
 

@@ -28,8 +28,8 @@ require_once SYSROOT.'template.php';
 require_once SYSROOT.'controller.php';
 require_once SYSROOT.'model.php';
 
-require_once SYSROOT.'interface/applicationModule.php';
-require_once SYSROOT.'interface/systemModule.php';
+require_once SYSROOT.'applicationModule.php';
+require_once SYSROOT.'systemModule.php';
 
 Core::init();
 Core::loadConfig();

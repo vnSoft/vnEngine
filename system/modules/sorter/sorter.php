@@ -8,19 +8,14 @@
  * Description of sorter
  *
  */
-class Sorter implements SystemModule {
+class Sorter extends SystemModule {
     public static $sorter;
 
     public static function init() {
-        require_once ('container/CSorterField.php');
-        require_once ('container/CSorter.php');
-        require_once ('interface/SorterInterfaceSorter.php');
-        require_once ('model/SorterModelSorter.php');
-        self::loadConfig();
+        parent::init();
         self::$sorter = new SorterInterfaceSorter();
     }
 
-    public static function loadConfig() {
-    }
+    
 }
 ?>
