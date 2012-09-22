@@ -11,6 +11,7 @@ class Form extends SystemModule {
 
     public static function init() {
         parent::init();
+        
         self::$form = new FormInterfaceForm();
         self::$builder = new BuilderInterfaceForm();
     }

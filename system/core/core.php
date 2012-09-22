@@ -45,8 +45,6 @@ class Core {
             call_user_func(array(ucfirst($module), 'init'));
         }
         
-        require_once APPROOT.'app_system'.DIRECTORY_SEPARATOR.'app_system.php';
-        call_user_func(array('App_System', 'init'));
     }
 
     /**
@@ -122,6 +120,7 @@ class Core {
         if (strstr($dir, APPROOT) === false) {
             $dir = APPROOT . 'modules' . DIRECTORY_SEPARATOR . $dir;
         }
+   
         foreach (new DirectoryIterator($dir) as $file) {
             if (!$file->isDot()) {
                 if ($file->isDir())
@@ -134,15 +133,16 @@ class Core {
     }
     
     public static function includeSystemModuleFiles($dir) {
-        if (strstr($dir, "view") !== false OR strstr($dir, "form") !== false)
+        if (strstr($dir, "view") !== false)
             return;
-        if (strstr($dir, APPROOT) === false) {
+        if (strstr($dir, MODROOT) === false) {
             $dir = MODROOT . $dir;
         }
+     
         foreach (new DirectoryIterator($dir) as $file) {
             if (!$file->isDot()) {
                 if ($file->isDir())
-                    self::includeModuleFiles($file->getPathname());
+                    self::includeSystemModuleFiles($file->getPathname());
                 else {
                     require_once $file->getPathname();
                 }

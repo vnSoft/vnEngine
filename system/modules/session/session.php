@@ -10,6 +10,7 @@ class Session extends SystemModule {
 	public static function init() {
             parent::init();
             Session::$session = new SessionInterfaceSession();
+            
 	}
 
 }

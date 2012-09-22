@@ -13,13 +13,14 @@ class SessionInterfaceSession {
      */
     public function start($iTimeout = null, $bIP = null, $bBrowser = null) {
         if ($iTimeout == null)
-            $iTimeout = Session::$config['timeout'];
+            $iTimeout = Session::config('timeout');
+        
 
         if ($bIP == null)
-            $bIP = Session::$config['IP'];
+            $bIP = Session::config('IP');
 
         if ($bBrowser == null)
-            $bBrowser = Session::$config['browser'];
+            $bBrowser = Session::config('browser');
         
         $session = new SessionModelSession();
         $session->start($iTimeout, $bIP, $bBrowser);
