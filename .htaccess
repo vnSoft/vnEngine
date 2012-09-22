@@ -1,0 +1,9 @@
+Header unset ETag
+FileETag none
+ExpiresActive On
+ExpiresDefault "access plus 4 months"
+RewriteEngine on
+RewriteBase /vnEngine/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)?$ index.php [QSA,L]

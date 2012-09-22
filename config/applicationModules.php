@@ -1,0 +1,6 @@
+<?php
+$applicationModules = array(
+    'page'
+    );
+
+?>

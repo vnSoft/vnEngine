@@ -1,12 +1,50 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title></title>
-    </head>
-    <body>
-        <?php
-        // put your code here
-        ?>
-    </body>
-</html>
+<?php
+
+//Used for including and creating files; contains system separators
+define('DOCROOT',  realpath(dirname(__FILE__)).DIRECTORY_SEPARATOR);
+define('APPROOT',  DOCROOT.'application'.DIRECTORY_SEPARATOR);
+define('CONFROOT', DOCROOT.'config'.DIRECTORY_SEPARATOR);
+define('SYSROOT',  DOCROOT.'system'.DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR);
+define('MODROOT',  DOCROOT.'system'.DIRECTORY_SEPARATOR.'modules'.DIRECTORY_SEPARATOR);
+
+//ROOT is used for creating internal links; contains only '/' separators
+define('ROOT', str_replace(DIRECTORY_SEPARATOR, "/", str_replace(realpath(getenv("DOCUMENT_ROOT")), '', realpath(dirname(__FILE__))))."/");
+date_default_timezone_set('Europe/Warsaw');
+function __autoload($sName){
+    if(strpos($sName, "Template") !== false) {
+        $sName = strtolower(str_replace("Template", "", $sName));
+        include APPROOT . "templates" . DIRECTORY_SEPARATOR . $sName . DIRECTORY_SEPARATOR . "$sName.php";
+    }
+}
+
+
+require_once SYSROOT.'exception.php';
+
+require_once SYSROOT.'core.php';
+require_once SYSROOT.'request.php';
+require_once SYSROOT.'router.php';
+require_once SYSROOT.'view.php';
+require_once SYSROOT.'template.php';
+require_once SYSROOT.'controller.php';
+require_once SYSROOT.'model.php';
+
+require_once SYSROOT.'interface/applicationModule.php';
+require_once SYSROOT.'interface/systemModule.php';
+
+Core::init();
+Core::loadConfig();
+Core::loadSystemModules();
+
+Session::$session->start();
+
+Core::loadApplicationModules();
+
+Router::getInstance()->process(new Request());
+
+Session::$session->end();
+
+
+
+
+
+?>
