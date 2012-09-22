@@ -27,7 +27,7 @@ require_once SYSROOT.'view.php';
 require_once SYSROOT.'template.php';
 require_once SYSROOT.'controller.php';
 require_once SYSROOT.'model.php';
-
+require_once SYSROOT.'service.php';
 require_once SYSROOT.'applicationModule.php';
 require_once SYSROOT.'systemModule.php';
 
@@ -37,6 +37,7 @@ Core::loadSystemModules();
 
 Session::$session->start();
 
+Core::loadServices();
 Core::loadApplicationModules();
 
 Router::getInstance()->process(new Request());

@@ -1,0 +1,6 @@
+<?php
+
+    $services = array(
+        'search'
+    );
+?>

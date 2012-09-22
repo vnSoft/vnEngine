@@ -12,6 +12,7 @@ class Core {
 
     public static $s_systemModules;
     public static $s_config;
+    public static $s_services;
     public static $s_applicationModules;
 
     public static function init() {
@@ -45,6 +46,20 @@ class Core {
             call_user_func(array(ucfirst($module), 'init'));
         }
         
+    }
+    
+    /**
+     * Loads services files listed in file 'config/services.php'
+     */
+    public static function loadServices() {
+        require_once CONFROOT . 'services.php';
+
+        Core::$s_services = $services;
+        foreach (Core::$s_services as $service) {
+            $service = strtolower($service);
+            require_once APPROOT . "services" . DIRECTORY_SEPARATOR . $service . DIRECTORY_SEPARATOR . $service . '.php';
+            call_user_func(array($service, 'init'));
+        }
     }
 
     /**
@@ -143,6 +158,24 @@ class Core {
             if (!$file->isDot()) {
                 if ($file->isDir())
                     self::includeSystemModuleFiles($file->getPathname());
+                else {
+                    require_once $file->getPathname();
+                }
+            }
+        }
+    }
+    
+    public static function includeServiceFiles($dir) {
+        if (strstr($dir, "view") !== false OR strstr($dir, "form") !== false)
+            return;
+        if (strstr($dir, APPROOT) === false) {
+            $dir = APPROOT . 'services' . DIRECTORY_SEPARATOR . $dir;
+        }
+   
+        foreach (new DirectoryIterator($dir) as $file) {
+            if (!$file->isDot()) {
+                if ($file->isDir())
+                    self::includeServiceFiles($file->getPathname());
                 else {
                     require_once $file->getPathname();
                 }
