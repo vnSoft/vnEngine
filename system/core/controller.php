@@ -6,7 +6,7 @@
  * @created 31-sty-2012 17:09:49
  * @completed 13-02-2012
  */
-class Controller {
+abstract class Controller {
 
     protected $m_template;
     protected $m_request;
@@ -61,10 +61,10 @@ class Controller {
     protected function retrievePager() {
         $pager = null;
 
-        if (Pager::$pager->exists(self::$sPagerName))
-            $pager = Pager::$pager->get(self::$sPagerName);
+        if (Pager::$pager->exists(static::$sPagerName))
+            $pager = Pager::$pager->get(static::$sPagerName);
         else {
-            $pager = Pager::$pager->create(self::$sPagerName);
+            $pager = Pager::$pager->create(static::$sPagerName);
             $pager->setSize(3);
         }
 
@@ -79,10 +79,10 @@ class Controller {
     protected function retrieveFilter() {
         $filter = null;
 
-        if (Filter::$filter->exists(self::$sFilterName))
-            $filter = Filter::$filter->get(self::$sFilterName);
+        if (Filter::$filter->exists(static::$sFilterName))
+            $filter = Filter::$filter->get(static::$sFilterName);
         else {
-            $filter = Filter::$filter->create(self::$sFilterName);
+            $filter = Filter::$filter->create(static::$sFilterName);
         }
 
         return $filter;
@@ -91,10 +91,10 @@ class Controller {
     protected function retrieveSorter() {
         $sorter = null;
 
-        if (Sorter::$sorter->exists(self::$sSorterName))
-            $sorter = Sorter::$sorter->get(self::$sSorterName);
+        if (Sorter::$sorter->exists(static::$sSorterName))
+            $sorter = Sorter::$sorter->get(static::$sSorterName);
         else 
-            $sorter = Sorter::$sorter->create(self::$sSorterName);
+            $sorter = Sorter::$sorter->create(static::$sSorterName);
 
         return $sorter;
     }
