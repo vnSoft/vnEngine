@@ -62,6 +62,10 @@ class FieldModelForm extends Model {
     public function getValue() {
         return $this->m_value;
     }
+    
+    public function getType() {
+        return $this->m_iType;
+    }
 
     public function getName() {
         return $this->m_sName;

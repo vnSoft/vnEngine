@@ -163,15 +163,45 @@ class FormModelForm extends Model {
         $iFormID = md5($this->m_sName);
         foreach ($this->m_fields as $field) {
             $field->unsetValue();
-            $value = $request->getParam($field->getName() . "-$iFormID");
-            if (!empty($value) OR $value === '0')
-                $field->setValue($value);
+            
+            if($field->getType() == FILE_FIELD)
+                $this->processUploadedFile($field);
+            else {
+                $value = $request->getParam($field->getName() . "-$iFormID");
+                if (!empty($value) OR $value === '0')
+                    $field->setValue($value);
+            }
         }
     }
 
     private function save() {
         $iFormID = md5($this->m_sName);
         Session::$session->set($iFormID, serialize($this));
+    }
+    
+    private function processUploadedFile(FieldModelForm &$field) {
+        if(isset($_FILES[$field->getName()])) {
+            $sTmpName = $_FILES[$field->getName()]['tmp_name'];
+            $sMime = $_FILES[$field->getName()]['type'];
+            $iSize = $_FILES[$field->getName()]['size'];
+            $iError = $_FILES[$field->getName()]['error'];
+            $sExtension = '';
+            $mimes = Form::config('mimes');
+            if(isset($mimes[$sMime]))
+                $sExtension = $mimes[$sMime];
+            
+            if($iError == 0) {
+                $sNewName = md5(date("Y-m-d H:i:s")).".tmp";
+                if(move_uploaded_file($sTmpName, APPROOT.'media/tmp/'.$sNewName)) 
+                    $file = new CFormFile($sTmpName, $sExtension, $sMime, $iSize, true);
+                else
+                    $file = new CFormFile($sTmpName, $sExtension, $sMime, $iSize, false);
+            }
+            else
+                $file = new CFormFile($sTmpName, $sExtension, $sMime, $iSize, false);
+            $field->setValue($file);
+        }
+        
     }
 
 }

@@ -1,6 +1,6 @@
 <?php
-
     $services = array(
-        'search'
+        'search',
+        'manage'
     );
 ?>
