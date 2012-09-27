@@ -9,8 +9,13 @@ defined('DOCROOT') OR die('Brak bezpośredniego dostępu do pliku!');
 class BuilderInterfaceForm {
 
     function build($sFormFile) {
-        $content = file_get_contents(APPROOT.'modules/'.$sFormFile);
-        $form = new SimpleXMLElement($content);
+        if(Cache::$cache->exists('form-'.$sFormFile))
+                $form = Cache::$cache->get('form-'.$sFormFile);
+        else {
+            $content = file_get_contents(APPROOT.'modules/'.$sFormFile);
+            $form = new SimpleXMLElement($content);
+            Cache::$cache->set('form-'.$sFormFile, $form);
+        }
 
         //Tworzenie formularza
         $sFormName = $form['name'];
