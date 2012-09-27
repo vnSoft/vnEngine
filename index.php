@@ -33,6 +33,7 @@ require_once SYSROOT.'systemModule.php';
 
 Core::init();
 Core::loadConfig();
+Core::initCache();
 Core::loadSystemModules();
 
 Session::$session->start();

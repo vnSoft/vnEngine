@@ -31,6 +31,11 @@ class Core {
 
         Core::$s_config = $config;
     }
+    
+    public static function initCache() {
+        self::includeSystemModuleFiles('cache');
+        Cache::init();
+    }
 
     /**
      * Loads system modules files listed in file 'config/systemModules.php'
