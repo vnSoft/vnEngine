@@ -31,6 +31,10 @@ class CFilterField {
         $this->m_value = $value;
     }
     
+    public function toString() {
+        return $this->m_sFieldName. $this->m_sFilterComparator . $this->m_value;
+    }
+    
     public function compareTo(CFilterField $other){
         return $this->m_sFieldName === $other->getFieldName() 
                 AND $this->m_sFilterComparator === $other->getComparator()

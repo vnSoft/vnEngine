@@ -43,6 +43,13 @@ class CSorter {
                 unset($field);
         }
     }
+    
+    public function getStringID() {
+        $sID = $this->m_sName;
+        foreach($this->m_fields as $field)
+            $sID .= $field->toString();
+        return $sID;
+    }
 
     public function clearFields() {
         $this->m_fields = array();

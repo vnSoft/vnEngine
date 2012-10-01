@@ -20,7 +20,7 @@ class CFilter {
     public function getField($sFieldName) {
         $field = null;
         foreach($this->m_fields as &$f) {
-            if($f->getName() == $sFieldName) {
+            if($f->getFieldName() == $sFieldName) {
                 $field = $f;
                 break;
             }
@@ -38,14 +38,21 @@ class CFilter {
     }
 
     public function deleteField($sFieldName) {
-        foreach($this->m_fields as &$field) {
-            if($field->getName() == $sFieldName)
-                unset($field);
+        foreach($this->m_fields as $key => $field) {
+            if($field->getFieldName() == $sFieldName)
+                unset($this->m_fields[$key]);
         }
     }
 
     public function clearFields() {
         $this->m_fields = array();
+    }
+    
+    public function getStringID() {
+        $sID = $this->m_sName;
+        foreach($this->m_fields as $field)
+            $sID .= $field->toString();
+        return $sID;
     }
     
     public function compareTo(CFilter $other){

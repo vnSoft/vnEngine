@@ -43,7 +43,7 @@ class PagerModelPager {
     function delete($sPagerName) {
 
         $sCodedName = md5($sPagerName);
-        Session::$sesion->delete(self::NAME_PREFIX . $sCodedName);
+        Session::$session->delete(self::NAME_PREFIX . $sCodedName);
     }
 
     function getAllRecordsNum($sModelName, Cfilter $filter = null) {

@@ -24,7 +24,7 @@ class FilterInterfaceFilter {
         $filter = null;
 
         $filterModel = new FilterModelFilter();
-        if($this->filterExists($sFilterName))
+        if($filterModel->exists($sFilterName))
             $filter = $filterModel->get($sFilterName);
         else
             $filter = $filterModel->create($sFilterName);

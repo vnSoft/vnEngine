@@ -10,12 +10,18 @@ defined('DOCROOT') OR die('Brak bezpośredniego dostępu do pliku!');
  */
 class Model {
     protected $m_sTableName = '';
+    protected $m_sClassName = '';
 
     function __construct() {
         if($this->m_sTableName == '') {
             $sClassName =  get_class($this);
             $iPos = strpos($sClassName, "Model");
             $this->m_sTableName = strtolower(substr($sClassName, 0, $iPos));
+        }
+        if($this->m_sClassName == '') {
+            $sClassName =  get_class($this);
+            $iPos = strpos($sClassName, "Model");
+            $this->m_sClassName = substr($sClassName, 0, $iPos);
         }
 
         Cache::$cache->createModelSpace(ucfirst($this->m_sTableName));
@@ -24,14 +30,30 @@ class Model {
     function __destruct() {   
     }
     
+    function getModelName() {
+        return $this->m_sClassName;
+    }
+    
+    function getTableName() {
+        return $this->m_sTableName;
+    }
+    
+    function getFields() {
+        return array();
+    }
+    
+    function getLangMapItems() {
+        return array();
+    }
+    
     function createFromRow($row) {
-        
+       
     }
 
     function exists($iModelID) {
         $bExists = false;
         $sKeyName = "{$this->m_sTableName}_id";
-
+        
         if(Cache::$cache->isInModelSpace($this->m_sTableName, 'exists', $iModelID)) 
             $bExists =  Cache::$cache->getFromModelSpace($this->m_sTableName, 'exists', $iModelID);
         else {
@@ -39,21 +61,22 @@ class Model {
                 $result = Database::$mysql->get($this->m_sTableName)->where($sKeyName, '=', $iModelID)->execQuery();
                 $bExists = (Database::$mysql->getRowCount($result) > 0);
             } else {
-                $sExceptionVar = 'Lang::$wrong'.ucfirst($$this->m_sTableName).'ID';
+                $sExceptionVar = 'Lang::$wrong'.$this->m_sClassName.'ID';
                 throw new ObjectDoesntExistException ($$sExceptionVar);
             }
         }
 
-        $bExists =  Cache::$cache->addToModelSpace($this->m_sTableName, 'exists', $iModelID, $bExists);
+        Cache::$cache->addToModelSpace($this->m_sTableName, 'exists', $iModelID, $bExists);
         return $bExists;
     }
     
     function checkExistance($iModelID) {
         $bExists = false;
+        
 
         $bExists = $this->exists($iModelID);
         if(!$bExists) {
-            $sExceptionVar = 'Lang::$'.ucfirst($this->m_sTableName).'DoesntExist';
+            $sExceptionVar = 'Lang::$'.$this->m_sClassName.'DoesntExist';
             throw new ObjectDoesntExistException (($$sExceptionVar));
         }
 
@@ -72,7 +95,6 @@ class Model {
             $res = Database::$mysql->get($this->m_sTableName)->where($sKeyName, '=', $iModelID)->execQuery();
             $container = $this->createFromRow(Database::$mysql->getRow($res));
         }
-        
         Cache::$cache->add($this->m_sTableName."-".$iModelID, $container);
         return $container;
     }
@@ -80,9 +102,11 @@ class Model {
     public function getList($filter = null, $sorter = null, $pager = null) {
         $list = array();
         $sCacheID = '';
-        if($filter != null) $sCacheKey .= ":f:".$filter->getName();
-        if($sorter != null) $sCacheKey .= ":s:".$sorter->getName();
-        if($pager != null) $sCacheKey .= ":p:".$pager->getName();
+        if($filter != null) $sCacheID .= ":f:".$filter->getStringID();
+        if($sorter != null) $sCacheID .= ":s:".$sorter->getStringID();
+        if($pager != null) $sCacheID .= ":p:".$pager->getStringID();
+        
+        
         
         if(Cache::$cache->isInModelSpace($this->m_sTableName, 'list', $sCacheID))
             $list = Cache::$cache->getFromModelSpace($this->m_sTableName, 'list', $sCacheID);
@@ -111,6 +135,68 @@ class Model {
             Database::$mysql->setSorter($sorter);
     }
     
+    function add($container) {
+        $iModelID = 0;
+        
+        $container->validate();
+        
+        $fields = $this->getFields();
+        $additionMap = array();
+        
+        foreach($fields as $field) {
+            if($field == strtolower($this->m_sTableName)."_id")
+                continue;
+            
+            $sMethodName = "get".str_replace("_", "", $field);
+            if(method_exists($container, $sMethodName))
+                $additionMap[$field] = $container->$sMethodName();
+        }
+        Database::$mysql->add($this->m_sTableName, $additionMap)->execQuery();
+        
+        $iModelID = Database::$mysql->getLastID();
+        Cache::$cache->clearModelSpace($this->m_sTableName);
+        
+        return $iModelID;
+    }
+    
+    function edit($container) {
+        $bSuccess = false;
+        
+        $container->validate();
+        
+        $fields = $this->getFields();
+        $additionMap = array();
+        
+        foreach($fields as $field) {
+            if($field == strtolower($this->m_sTableName)."_id")
+                continue;
+            
+            $sMethodName = "get".str_replace("_", "", $field);
+            if(method_exists($container, $sMethodName))
+                $additionMap[$field] = $container->$sMethodName();
+        }
+        Database::$mysql->update($this->m_sTableName, $additionMap)
+                ->where(strtolower($this->m_sTableName)."_id", '=', $container->getID())->execQuery();
+        
+        $bSuccess = true;
+        Cache::$cache->clearModelSpace($this->m_sTableName);
+        
+        return $bSuccess;
+    }
+    
+    function delete($iModelID) {
+        $bSuccess = false;
+        
+        $this->checkExistance($iModelID);
+        
+        Database::$mysql->delete($this->m_sTableName)
+                ->where(strtolower($this->m_sTableName)."_id", '=', $iModelID)->execQuery();
+        
+        $bSuccess = true;
+        Cache::$cache->clearModelSpace($this->m_sTableName);
+        
+        return $bSuccess;
+    }
 }
 
 ?>

@@ -59,7 +59,9 @@ class CPager {
     function isOutOfBound($sModelName, CFilter $filter = null) {
         $bOut = true;
 
-        if ($this->m_iPageNumber < 1)
+        if ($this->m_iPageNumber == 1)
+            $bOut = false;
+        else if ($this->m_iPageNumber < 1)
             $bOut = true;
         else {
             $iRecordsNum = $this->getAllRecordsNum($sModelName, $filter);
@@ -70,6 +72,11 @@ class CPager {
             $bOut = $fPartResult <= -1;
         }
         return $bOut;
+    }
+    
+    public function getStringID() {
+        $sID = $this->m_sName."-".$this->m_iSize."-".$this->m_iPageNumber;
+        return $sID;
     }
 
     private function getAllRecordsNum($sModelName, CFilter $filter = null) {

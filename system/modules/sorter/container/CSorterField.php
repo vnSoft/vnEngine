@@ -24,6 +24,10 @@ class CSorterField {
     public function setName($sFieldName) {
         $this->m_sFieldName = $sFieldName;
     }
+    
+    public function toString() {
+        return $this->m_sFieldName." ".$this->m_sSortType;
+    }
 
     public function setType($sSortType) {
         if($sSortType == "ASC" OR $sSortType == "DESC")

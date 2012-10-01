@@ -20,7 +20,7 @@ class CacheInterfaceCache {
     }
     
     public function get($sKey) {
-        $this->m_cacheModel->get($sKey);
+        return $this->m_cacheModel->get($sKey);
     }
     
     public function delete($sKey) {
