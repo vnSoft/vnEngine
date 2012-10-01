@@ -20,6 +20,15 @@ class Request {
     private $m_sUserIP;
     private $m_userBrowser = array();
     private $m_bIsAJAX = false;
+    
+    
+    public static function getLink($sModule, $sController, $sAction, $params = array()) {
+        $sLink = ROOT."$sModule/$sController/$sAction/";
+        
+        foreach($params as $key => $value)
+            $sLink .= "$key/$value/";
+        return $sLink;
+    }
 
     /**
      * Default constructor. Dispatches request from browser address
@@ -138,6 +147,10 @@ class Request {
     public function getLanguage() {
         return Request::$s_sLanguage;
     }
+    
+    public function getCurrentLink() {
+        return self::getLink($this->m_sModule, $this->m_sController, $this->m_sAction, $this->m_parameters);
+    }
 
     /**
      * Returns true if application is called by AJAX
@@ -148,6 +161,7 @@ class Request {
     public function isAJAX() {
         return $this->m_bIsAJAX;
     }
+    
 
     /**
      * Creates request from method parameters
@@ -219,12 +233,15 @@ class Request {
      */
     private function setCurrentLanguage() {
         if(isset($this->m_parameters['lang'])) {
-            Session::$session->set('lang'.md5('lang'), $this->m_parameters['lang']);
+            if(Core::hasLanguage($this->m_parameters['lang']))
+                Session::$session->set('lang'.md5('lang'), $this->m_parameters['lang']);
         }
         if(!Session::$session->isVarSet('lang'.md5('lang')))
             Session::$session->set('lang'.md5('lang'), Core::$s_config['language']);
 
         Request::$s_sLanguage = Session::$session->get('lang'.md5('lang'));
+        Core::initModulesLanguage(Request::$s_sLanguage);
+        Database::$mysql->setLanguage(Request::$s_sLanguage);
     }
 
     /**

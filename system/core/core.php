@@ -32,6 +32,10 @@ class Core {
         Core::$s_config = $config;
     }
     
+    public static function hasLanguage($sLang) {
+        return isset(Core::$s_config['languages'][$sLang]);
+    }
+    
     public static function initCache() {
         self::includeSystemModuleFiles('cache');
         Cache::init();
@@ -185,6 +189,13 @@ class Core {
                     require_once $file->getPathname();
                 }
             }
+        }
+    }
+    
+    static function initModulesLanguage($sLang) {
+        foreach (Core::$s_applicationModules as $module) {
+            $module = strtolower($module);
+            call_user_func(ucfirst($sModule).'::setLanguage', $sLang);
         }
     }
 

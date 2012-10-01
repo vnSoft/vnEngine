@@ -19,6 +19,7 @@ function __autoload($sName){
 
 
 require_once SYSROOT.'exception.php';
+require_once SYSROOT.'lang.php';
 
 require_once SYSROOT.'core.php';
 require_once SYSROOT.'request.php';

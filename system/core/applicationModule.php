@@ -5,6 +5,7 @@ defined('DOCROOT') OR die('Brak bezpośredniego dostępu do pliku!');
 abstract class ApplicationModule {
     protected static $s_sDefaultController = 'DefaultControllerModule';
     protected static $config;
+    protected static $lang;
     
     public static function init() {
         $sClassName = strtolower(get_called_class());
@@ -36,6 +37,18 @@ abstract class ApplicationModule {
             return static::$config[$sIndex];
         else
             return null;
+    }
+    
+    public function setLanguage($sLanguage) {
+        if(file_exists(APPROOT.'modules/'.$sClassName."/lang/$sLanguage.php"))
+            require_once APPROOT.'modules/'.$sClassName."/lang/$sLanguage.php";
+         $sClassName = strtolower(get_called_class());
+         $sLangClassName = $sClassName."Lang";
+         static::$lang = new $sLangClassName();
+    }
+    
+    public function lang($sLangVariableName) {
+        return static::$lang->get($sLangVariableName);
     }
 }
 
