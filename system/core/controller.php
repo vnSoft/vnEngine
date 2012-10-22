@@ -14,6 +14,8 @@ abstract class Controller {
     protected static $sSorterName = "sorter";
     protected static $sFilterName = "filter";
     
+    
+    abstract function getMethodList();
 
     /**
      * Creates new controller object

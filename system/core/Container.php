@@ -11,6 +11,7 @@ defined('DOCROOT') OR die('Brak bezpośredniego dostępu do pliku!');
  *
  */
 class Container {
+    
     public function validate() {
         return true;
     }

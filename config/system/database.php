@@ -4,7 +4,7 @@ $config = array(
     'host' => 'localhost',
     'user' => 'root',
     'password' => '',
-    'name' => 'vnCMS',
+    'name' => 'vnpanel',
     'languages' => true
 );
 

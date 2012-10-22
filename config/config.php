@@ -8,6 +8,6 @@ $config = array(
     'charset' => 'utf-8',
     'template' => 'default',
     'running_mode' => Core::DEBUG,
-    'default_module' => 'page'
+    'default_module' => 'translator'
 );
 ?>

@@ -6,6 +6,9 @@ defined('DOCROOT') OR die('Brak bezpośredniego dostępu do pliku!');
 class PageControllerPage extends Controller implements Editable, Addable {
     private static $sForm = 'page_form';
     
+    public function getMethodList() {
+        return array('createForm', 'add', 'edit');
+    }
     public function defaultAction() {
         $this->createForm();
         if(Form::$form->isSent()) {
@@ -17,6 +20,13 @@ class PageControllerPage extends Controller implements Editable, Addable {
         $this->m_template->render();
             
             
+    }
+    
+    
+    function show() {
+        $iPageID = $this->m_request->getParam('id');
+        
+        echo "show $iPageID";
     }
     
     private function createForm() {

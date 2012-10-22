@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Rudzki
  * @version 1.0
@@ -40,12 +41,15 @@ class Router {
             $sControllerClass = $sController . 'Controller' . $sModule;
             if (class_exists($sControllerClass, false) AND !empty($sController)) {
                 $controller = new $sControllerClass($request);
-                if (method_exists($controller, $sAction))
-                    $controller->$sAction();
-                else
+                if (method_exists($controller, $sAction)) {
+                    if(in_array($sAction, $controller->getMethodList()))
+                        $controller->$sAction();
+                    else 
+                        $controller->defaultAction($request);
+                } else 
                     $controller->defaultAction($request);
-            } else 
-                call_user_func(ucfirst($sModule).'::defaultAction', $request);
+            } else
+                call_user_func(ucfirst($sModule) . '::defaultAction', $request);
         } else {
             $this->processDefault($request);
         }
@@ -57,8 +61,8 @@ class Router {
      * @param e
      */
     public function processException(Exception $e) {
-        if(!self::$s_request instanceof Request)
-            trigger_error("Unexpected initialization exception: ".$e->getMessage(), E_USER_ERROR);
+        if (!self::$s_request instanceof Request)
+            trigger_error("Unexpected initialization exception: " . $e->getMessage(), E_USER_ERROR);
         $sController = Router::$s_request->getController();
         $sModule = Router::$s_request->getModule();
         if (class_exists($sModule, true)) {
@@ -67,11 +71,11 @@ class Router {
                 $controller = new $sController(Router::$s_request);
                 $controller->handleException($e);
             } else
-                call_user_func(ucfirst($sModule).'::getDefaultController', Router::$s_request)->handleException($e);
+                call_user_func(ucfirst($sModule) . '::getDefaultController', Router::$s_request)->handleException($e);
         }
         else {
             $sModule = Core::$s_config['default_module'];
-            call_user_func(ucfirst($sModule).'::getDefaultController',Router::$s_request)->handleException($e);
+            call_user_func(ucfirst($sModule) . '::getDefaultController', Router::$s_request)->handleException($e);
         }
     }
 
@@ -80,7 +84,7 @@ class Router {
      */
     public function processDefault(Request $request) {
         $sModule = Core::$s_config['default_module'];
-        call_user_func(ucfirst($sModule).'::defaultAction', $request);
+        call_user_func(ucfirst($sModule) . '::defaultAction', $request);
     }
 
     public function getCurrentRequest() {

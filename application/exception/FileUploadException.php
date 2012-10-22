@@ -7,15 +7,17 @@ defined('DOCROOT') OR die('Brak bezpośredniego dostępu do pliku!');
  */
 
 /**
- * Description of Lang
+ * Description of FileUploadException
  *
  */
-class Lang {
-    
-    
-    function get($sLangVar) {
-        return static::$sLangVar;
+class FileUploadException extends Exception {
+
+    protected $message;
+
+    public function __construct($sMessage) {
+        $this->message = $sMessage;
     }
+
 }
 
 ?>

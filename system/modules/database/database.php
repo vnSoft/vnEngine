@@ -21,7 +21,7 @@ class Database extends SystemModule {
 
     public static function loadConfig() {
         require_once (DOCROOT.'config'.DIRECTORY_SEPARATOR.'system'.DIRECTORY_SEPARATOR.'database.php');
-        self::$config = $config;
+        self::$properties['database']['config'] = $config;
         self::$languageMap = $languageMap;
     }
     
