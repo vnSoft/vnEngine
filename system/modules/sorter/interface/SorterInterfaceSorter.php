@@ -24,7 +24,7 @@ class SorterInterfaceSorter {
         $sorter = null;
 
         $sorterModel = new SorterModelSorter();
-        if($this->sorterExists($sSorterName))
+        if($this->exists($sSorterName))
             $sorter = $sorterModel->get($sSorterName);
         else
             $sorter = $sorterModel->create($sSorterName);

@@ -6,6 +6,9 @@ class PagerInterfacePager {
     function create($sPagerName, $iSize = 0){
         $pager = null;
         
+        if($iSize == 0)
+            $iSize = Pager::config('size');
+        
         $pagerModel = new PagerModelPager();
         $pager = $pagerModel->create($sPagerName, $iSize);
         
@@ -38,15 +41,6 @@ class PagerInterfacePager {
     function delete($sPagerName){
         $pagerModel = new PagerModelPager();
         $pagerModel->delete($sPagerName);
-    }
-    
-    function getAllRecordsNum($sModelName, CFilter $filter = null){
-        $iRecordsNum = 0;
-        
-        $pagerModel = new PagerModelPager();
-        $iRecordsNum =$pagerModel->getAllRecordsNum($sModelName, $filter);
-        
-        return $iRecordsNum;
     }
 }
 

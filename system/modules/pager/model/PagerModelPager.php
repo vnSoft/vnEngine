@@ -45,20 +45,6 @@ class PagerModelPager {
         $sCodedName = md5($sPagerName);
         Session::$session->delete(self::NAME_PREFIX . $sCodedName);
     }
-
-    function getAllRecordsNum($sModelName, Cfilter $filter = null) {
-        $iRecordsNum = 0;
-
-        $safeModelName = Database::$mysql->escape($sModelName);
-        if ($filter !== null)
-            Database::$mysql->setFilter($filter);
-        $result = Database::$mysql->custom("SELECT COUNT(*) FROM $safeModelName")->execQuery();
-        $row = Database::$mysql->getRow($result);
-        $iRecordsNum = $row['COUNT(*)'];
-        
-        return $iRecordsNum;
-    }
-
 }
 
 ?>

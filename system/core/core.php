@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @author Rudzki
  * @version 1.0
@@ -16,6 +15,10 @@ class Core {
     public static $s_applicationModules;
 
     public static function init() {
+        //Wczytanie klas wyjątków
+        self::initSystemExceptions();
+        self::initApplicationExceptions();
+        
         //Ustawienie funkcji obsługi błędów i wyjątków
         set_exception_handler(array('Core', 'exceptionHandler'));
         set_error_handler(array('Core', 'errorHandler'));
@@ -31,11 +34,11 @@ class Core {
 
         Core::$s_config = $config;
     }
-    
+
     public static function hasLanguage($sLang) {
         return isset(Core::$s_config['languages'][$sLang]);
     }
-    
+
     public static function initCache() {
         self::includeSystemModuleFiles('cache');
         Cache::init();
@@ -54,9 +57,8 @@ class Core {
             require_once MODROOT . $module . DIRECTORY_SEPARATOR . $module . '.php';
             call_user_func(array(ucfirst($module), 'init'));
         }
-        
     }
-    
+
     /**
      * Loads services files listed in file 'config/services.php'
      */
@@ -80,8 +82,9 @@ class Core {
         Core::$s_applicationModules = $applicationModules;
         foreach (Core::$s_applicationModules as $module) {
             $module = strtolower($module);
+      
             require_once APPROOT . "modules" . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . $module . '.php';
-            call_user_func(array($module, 'init'));
+            call_user_func(array(ucfirst($module), 'init'));
         }
     }
 
@@ -144,7 +147,7 @@ class Core {
         if (strstr($dir, APPROOT) === false) {
             $dir = APPROOT . 'modules' . DIRECTORY_SEPARATOR . $dir;
         }
-   
+
         foreach (new DirectoryIterator($dir) as $file) {
             if (!$file->isDot()) {
                 if ($file->isDir())
@@ -155,14 +158,14 @@ class Core {
             }
         }
     }
-    
+
     public static function includeSystemModuleFiles($dir) {
         if (strstr($dir, "view") !== false)
             return;
         if (strstr($dir, MODROOT) === false) {
             $dir = MODROOT . $dir;
         }
-     
+
         foreach (new DirectoryIterator($dir) as $file) {
             if (!$file->isDot()) {
                 if ($file->isDir())
@@ -173,14 +176,14 @@ class Core {
             }
         }
     }
-    
+
     public static function includeServiceFiles($dir) {
         if (strstr($dir, "view") !== false OR strstr($dir, "form") !== false)
             return;
         if (strstr($dir, APPROOT) === false) {
             $dir = APPROOT . 'services' . DIRECTORY_SEPARATOR . $dir;
         }
-   
+
         foreach (new DirectoryIterator($dir) as $file) {
             if (!$file->isDot()) {
                 if ($file->isDir())
@@ -191,11 +194,29 @@ class Core {
             }
         }
     }
-    
+
     static function initModulesLanguage($sLang) {
-        foreach (Core::$s_applicationModules as $module) {
-            $module = strtolower($module);
-            call_user_func(ucfirst($sModule).'::setLanguage', $sLang);
+        foreach (Core::$s_applicationModules as $sModule) {
+            $sModule = strtolower($sModule);
+            call_user_func(ucfirst($sModule) . '::setLanguage', $sLang);
+        }
+    }
+
+    static function initSystemExceptions() {
+        foreach (new DirectoryIterator(DOCROOT . 'system/exception/') as $file) {
+            if (!$file->isDot()) {
+                if (!$file->isDir())
+                    require_once $file->getPathname();
+            }
+        }
+    }
+    
+    static function initApplicationExceptions() {
+        foreach (new DirectoryIterator(APPROOT . 'exception/') as $file) {
+            if (!$file->isDot()) {
+                if (!$file->isDir())
+                    require_once $file->getPathname();
+            }
         }
     }
 

@@ -149,6 +149,11 @@ class FormModelForm extends Model {
     public function renderField($sName) {
         $this->m_fields[$sName]->render();
     }
+    
+    public function renderValue($sFieldName, $value, $sParameterKey = '', $parameterValue = '') {
+        $this->m_fields[$sFieldName]->renderValue($value, $sParameterKey, $parameterValue);
+    }
+        
 
     public function finishRender() {
         $iFormID = md5($this->m_sName);
@@ -193,15 +198,16 @@ class FormModelForm extends Model {
             if($iError == 0) {
                 $sNewName = md5(date("Y-m-d H:i:s")).".tmp";
                 if(move_uploaded_file($sTmpName, APPROOT.'media/tmp/'.$sNewName)) 
-                    $file = new CFormFile($sTmpName, $sExtension, $sMime, $iSize, true);
+                    $file = new CFormFile(APPROOT.'media/tmp/'.$sNewName, $sExtension, $sMime, $iSize, true);
                 else
                     $file = new CFormFile($sTmpName, $sExtension, $sMime, $iSize, false);
             }
             else
                 $file = new CFormFile($sTmpName, $sExtension, $sMime, $iSize, false);
-            $field->setValue($file);
-        }
+        } else
+            $file = new CFormFile('', '', '', 0, false);
         
+        $field->setValue($file);
     }
 
 }

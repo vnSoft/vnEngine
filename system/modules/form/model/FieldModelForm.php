@@ -28,9 +28,11 @@ class FieldModelForm extends Model {
         $this->m_iType = $iType;
         $this->m_value = $value;
     }
-    public function setLabel($sLabel){
+
+    public function setLabel($sLabel) {
         $this->m_sLabel = $sLabel;
     }
+
     public function setClass($sClass) {
         $this->m_sClass = $sClass;
     }
@@ -56,13 +58,15 @@ class FieldModelForm extends Model {
         $this->m_bIsValid = false;
         $this->m_value = '';
     }
-    public function getLabel(){
+
+    public function getLabel() {
         return $this->m_sLabel;
     }
+
     public function getValue() {
         return $this->m_value;
     }
-    
+
     public function getType() {
         return $this->m_iType;
     }
@@ -85,16 +89,39 @@ class FieldModelForm extends Model {
         foreach ($this->m_rules as &$rule) {
             $rule->setValue($this->m_value);
             $rule->execute();
-            if (!$rule->passed()) 
+            if (!$rule->passed())
                 $this->m_bIsValid = false;
-                 
         }
         $this->m_bExecuted = true;
-
     }
 
     public function isValid() {
         return $this->m_bIsValid;
+    }
+
+    public function renderValue($value, $sParameterKey = '', $parameterValue = '') {
+        $tempValue = $this->m_value;
+
+        if ($sParameterKey != '') {
+            if (isset($this->m_parameters[$sParameterKey])) {
+                $bParameterSet = true;
+                $tempParameter = $this->m_parameters[$sParameterKey];
+            } else
+                $bParameterSet = false;
+            
+            $this->m_parameters[$sParameterKey] = $parameterValue;
+        }
+
+        $this->m_value = $value;
+        $this->render();
+        $this->m_value = $tempValue;
+
+        if ($sParameterKey != '') {
+            if ($bParameterSet)
+                $this->m_parameters[$sParameterKey] = $tempParameter;
+            else
+                unset($this->m_parameters[$sParameterKey]);
+        }
     }
 
     public function render() {
@@ -155,11 +182,11 @@ class FieldModelForm extends Model {
 
     public function getErrorMessages() {
         $result = array();
-        
-        if(!$this->m_bIsValid) {
-            
+
+        if (!$this->m_bIsValid) {
+
             foreach ($this->m_rules as &$rule) {
-                if(!$rule->passed()) 
+                if (!$rule->passed())
                     $result [] = $rule->getErrorMessage();
             }
         }

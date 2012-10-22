@@ -6,10 +6,12 @@
  */
 class Session extends SystemModule {
 	public static $session;
+        public static $cookie;
 
 	public static function init() {
             parent::init();
-            Session::$session = new SessionInterfaceSession();
+            self::$session = new SessionInterfaceSession();
+            self::$cookie = new CookieInterfaceSession();
             
 	}
 

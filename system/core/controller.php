@@ -57,6 +57,26 @@ abstract class Controller {
             $this->m_template->render();
         }
     }
+    
+    public function addView($view) {
+        $this->m_template->addView($view);
+    }
+    
+    protected function render($view = null) {
+
+        if($view != null)
+            $this->m_template->addView($view);
+        
+        $this->m_template->render();
+    }
+    
+    protected function renderForm($view) {
+        $view->form = Form::$form;
+
+        $this->m_template->addView($view);
+        $this->m_template->render();
+    }
+        
 
     protected function retrievePager() {
         $pager = null;
@@ -65,7 +85,7 @@ abstract class Controller {
             $pager = Pager::$pager->get(static::$sPagerName);
         else {
             $pager = Pager::$pager->create(static::$sPagerName);
-            $pager->setSize(3);
+            
         }
 
         $pageNumber = $this->m_request->getParam('page');

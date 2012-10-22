@@ -18,9 +18,7 @@ function __autoload($sName){
 }
 
 
-require_once SYSROOT.'exception.php';
 require_once SYSROOT.'lang.php';
-
 require_once SYSROOT.'core.php';
 require_once SYSROOT.'request.php';
 require_once SYSROOT.'router.php';
@@ -31,6 +29,8 @@ require_once SYSROOT.'model.php';
 require_once SYSROOT.'service.php';
 require_once SYSROOT.'applicationModule.php';
 require_once SYSROOT.'systemModule.php';
+require_once SYSROOT.'container.php';
+require_once SYSROOT.'ModuleInterface.php';
 
 Core::init();
 Core::loadConfig();

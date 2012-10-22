@@ -132,7 +132,6 @@ class RuleModelForm extends Model {
 
     private function checkLength() {
         $bPassed = false;
-
         if(strlen("{$this->m_value}") >= $this->m_iLenMin AND strlen("{$this->m_value}") <= $this->m_iLenMax)
             $bPassed = true;
 

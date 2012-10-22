@@ -54,15 +54,15 @@ class Model {
         $bExists = false;
         $sKeyName = "{$this->m_sTableName}_id";
         
-        if(Cache::$cache->isInModelSpace($this->m_sTableName, 'exists', $iModelID)) 
+        if(Cache::$cache->isInModelSpace("`{$this->m_sTableName}`", 'exists', $iModelID)) 
             $bExists =  Cache::$cache->getFromModelSpace($this->m_sTableName, 'exists', $iModelID);
         else {
             if(ctype_digit("$iModelID")) {
-                $result = Database::$mysql->get($this->m_sTableName)->where($sKeyName, '=', $iModelID)->execQuery();
+                $result = Database::$mysql->get("`{$this->m_sTableName}`")->where($sKeyName, '=', $iModelID)->execQuery();
                 $bExists = (Database::$mysql->getRowCount($result) > 0);
             } else {
-                $sExceptionVar = 'Lang::$wrong'.$this->m_sClassName.'ID';
-                throw new ObjectDoesntExistException ($$sExceptionVar);
+                $sExceptionVar = 'wrong'.$this->m_sClassName.'ID';
+                throw new ObjectDoesntExistException (Lang::sGet($sExceptionVar));
             }
         }
 
@@ -76,8 +76,8 @@ class Model {
 
         $bExists = $this->exists($iModelID);
         if(!$bExists) {
-            $sExceptionVar = 'Lang::$'.$this->m_sClassName.'DoesntExist';
-            throw new ObjectDoesntExistException (($$sExceptionVar));
+            $sExceptionVar = strtolower($this->m_sClassName).'DoesntExist';
+            throw new ObjectDoesntExistException ((Lang::sGet($sExceptionVar)));
         }
 
         return $bExists;
@@ -92,7 +92,7 @@ class Model {
             $sKeyName = "{$this->m_sTableName}_id";
             $this->checkExistance($iModelID);
 
-            $res = Database::$mysql->get($this->m_sTableName)->where($sKeyName, '=', $iModelID)->execQuery();
+            $res = Database::$mysql->get("`{$this->m_sTableName}`")->where($sKeyName, '=', $iModelID)->execQuery();
             $container = $this->createFromRow(Database::$mysql->getRow($res));
         }
         Cache::$cache->add($this->m_sTableName."-".$iModelID, $container);
@@ -113,7 +113,7 @@ class Model {
         else {
             $this->setLimits($filter, $sorter, $pager);
 
-            $result = Database::$mysql->get($this->m_sTableName)->execQuery();
+            $result = Database::$mysql->get("`{$this->m_sTableName}`")->execQuery();
             foreach(Database::$mysql->getAllRows($result) as $row) 
                 $list []= $this->createFromRow ($row);
         }
@@ -124,7 +124,7 @@ class Model {
     
     function setLimits($filter = null, $sorter = null, $pager = null) {
         if($pager !== null) {
-            if (!$pager->isOutOfBound($this->m_sTableName, $filter))
+            if ($pager->getPageNumber() > 0 AND ctype_digit("{$pager->getPageNumber()}"))
                 Database::$mysql->setPager($pager);
             else
                 throw new PagingException(Lang::$wrongPageNumber, $pager->getPageNumber());
@@ -135,7 +135,7 @@ class Model {
             Database::$mysql->setSorter($sorter);
     }
     
-    function add($container) {
+    function add(Container $container) {
         $iModelID = 0;
         
         $container->validate();
@@ -151,7 +151,7 @@ class Model {
             if(method_exists($container, $sMethodName))
                 $additionMap[$field] = $container->$sMethodName();
         }
-        Database::$mysql->add($this->m_sTableName, $additionMap)->execQuery();
+        Database::$mysql->insert("`{$this->m_sTableName}`", $additionMap)->execQuery();
         
         $iModelID = Database::$mysql->getLastID();
         Cache::$cache->clearModelSpace($this->m_sTableName);
@@ -159,7 +159,7 @@ class Model {
         return $iModelID;
     }
     
-    function edit($container) {
+    function edit(Container $container) {
         $bSuccess = false;
         
         $container->validate();
@@ -175,7 +175,7 @@ class Model {
             if(method_exists($container, $sMethodName))
                 $additionMap[$field] = $container->$sMethodName();
         }
-        Database::$mysql->update($this->m_sTableName, $additionMap)
+        Database::$mysql->update("`{$this->m_sTableName}`", $additionMap)
                 ->where(strtolower($this->m_sTableName)."_id", '=', $container->getID())->execQuery();
         
         $bSuccess = true;
@@ -189,7 +189,7 @@ class Model {
         
         $this->checkExistance($iModelID);
         
-        Database::$mysql->delete($this->m_sTableName)
+        Database::$mysql->delete("`{$this->m_sTableName}`")
                 ->where(strtolower($this->m_sTableName)."_id", '=', $iModelID)->execQuery();
         
         $bSuccess = true;

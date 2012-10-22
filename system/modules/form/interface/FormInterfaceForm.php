@@ -26,7 +26,6 @@ class FormInterfaceForm {
     }
     public function restoreForm($sFormName, Request $request) {
         $iFormID = md5($sFormName);
-        
         if (Session::$session->isVarSet($iFormID) AND $request->getParam('isSent-' . $iFormID) === 'true') {
             //Odzyskanie struktury z sesji
             $form = unserialize(Session::$session->get($iFormID));
@@ -110,6 +109,10 @@ class FormInterfaceForm {
     public function renderField($sFieldName) {
         $this->m_currentForm->renderField($sFieldName);
     }
+    
+    public function renderValue($sFieldName, $value, $sParameterKey = '', $parameterValue = '') {
+        $this->m_currentForm->renderValue($sFieldName, $value, $sParameterKey, $parameterValue);
+    }
 
     public function finishFormRender() {
         $this->m_currentForm->finishRender();
@@ -174,6 +177,13 @@ class FormInterfaceForm {
             
         else
             return array();
+    }
+    
+    public function getErrorMessages() {
+        $errorList = array();
+        foreach($this->getWrongFieldNames() as $sFieldName)
+            $errorList [$sFieldName] = $this->getFieldErrorMessages ($sFieldName);
+        return $errorList;
     }
 
     public function createRule($sName, $iType) {

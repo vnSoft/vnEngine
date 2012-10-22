@@ -34,10 +34,10 @@ class Template {
         $this->m_sName = $sTemplateName;
         $this->m_sLanguage = $sLanguage;
 
-        $sClassName =  get_class($this);
+        $sClassName = get_class($this);
         $sTemplateName = str_replace("Template", '', $sClassName);
-        $this->m_sPath = ROOT.'application/templates/'.strtolower($sTemplateName).'/';
-        require_once APPROOT . "lang" . DIRECTORY_SEPARATOR . $this->m_sLanguage . ".php";
+        $this->m_sPath = ROOT . 'application/templates/' . strtolower($sTemplateName) . '/';
+        //require_once APPROOT . "lang" . DIRECTORY_SEPARATOR . $this->m_sLanguage . ".php";
     }
 
     /**
@@ -62,7 +62,17 @@ class Template {
     }
 
     public function render() {
-        require_once APPROOT . "templates" . DIRECTORY_SEPARATOR . $this->m_sName . DIRECTORY_SEPARATOR . "index.php";
+        if (!Router::getInstance()->getCurrentRequest()->isAjax())
+            require_once APPROOT . "templates" . DIRECTORY_SEPARATOR . $this->m_sName . DIRECTORY_SEPARATOR . "index.php";
+        else {
+            if ($this->m_bExceptionOccured) {
+                echo "<div class='errorList'>";
+                    echo "<div class='error'>" . $this->m_exception->getMessage() . "</div>";
+                echo "</div>";
+            }
+            foreach ($this->m_views as $view)
+                $view->render();
+        }
     }
 
     /**
@@ -70,7 +80,7 @@ class Template {
      * @param sPath
      */
     public function addScript($sPath) {
-        $this->m_scripts[] = ROOT.'application/templates/'.strtolower($this->m_sName).'/'.$sPath;
+        $this->m_scripts[] = ROOT . 'application/templates/' . strtolower($this->m_sName) . '/' . $sPath;
     }
 
     /**
@@ -78,7 +88,7 @@ class Template {
      * @param sPath
      */
     public function addStyle($sPath) {
-        $this->m_styles[] = ROOT.'application/templates/'.strtolower($this->m_sName).'/'.$sPath;
+        $this->m_styles[] = ROOT . 'application/templates/' . strtolower($this->m_sName) . '/' . $sPath;
     }
 
     /**
@@ -150,7 +160,7 @@ class Template {
     }
 
     public function loadStaticViews() {
-
+        
     }
 
     public function initialize() {

@@ -7,8 +7,7 @@ class CPager {
     private $m_sName;
     private $m_iSize;
     private $m_iPageNumber;
-    private $m_iAllRecordsNum = -1;
-    private $m_previousFilter = null;
+    private $m_iPageCount = 1;
 
     function __construct($sName, $iSize = 0, $iPageNumber = 0) {
         $this->m_sName = $sName;
@@ -40,56 +39,25 @@ class CPager {
         $this->m_iPageNumber = $iPageNumber;
     }
 
-    function calcPagesRemainNum($sModelName, CFilter $filter = null) {
-        $iPagesRemain = 0;
-
-        $iRecordsNum = $this->getAllRecordsNum($sModelName, $filter);
-
-        $iItemsRemain = $iRecordsNum - $this->m_iSize * $this->m_iPageNumber;
-        $fPartResult = $iItemsRemain / $this->m_iSize;
-
-        $iPagesRemain = (int) $fPartResult;
-
-        if ($iPagesRemain != $fPartResult AND $fPartResult > 0)
-            $iPagesRemain++;
-
-        return $iPagesRemain;
+    public function getPageCount() {
+        return $this->m_iPageCount;
     }
 
-    function isOutOfBound($sModelName, CFilter $filter = null) {
-        $bOut = true;
-
-        if ($this->m_iPageNumber == 1)
-            $bOut = false;
-        else if ($this->m_iPageNumber < 1)
-            $bOut = true;
-        else {
-            $iRecordsNum = $this->getAllRecordsNum($sModelName, $filter);
-
-            $iItemsRemain = $iRecordsNum - $this->m_iSize * $this->m_iPageNumber;
-            $fPartResult = $iItemsRemain / $this->m_iSize;
-
-            $bOut = $fPartResult <= -1;
-        }
-        return $bOut;
+    public function setPageCount($iPageCount) {
+        $this->m_iPageCount = $iPageCount;
     }
     
+    public function processResultCount($iResultCount) {
+        if($iResultCount <= $this->m_iSize)
+            $this->m_iPageCount = 1;
+        else 
+            $this->m_iPageCount = ceil($iResultCount / $this->m_iSize);
+    }
+
+        
     public function getStringID() {
         $sID = $this->m_sName."-".$this->m_iSize."-".$this->m_iPageNumber;
         return $sID;
-    }
-
-    private function getAllRecordsNum($sModelName, CFilter $filter = null) {
-        if ($this->m_iAllRecordsNum == -1 OR !$this->m_previousFilter->compareTo($filter)) {
-            $iRecordsNum = 0;
-            
-            $iRecordsNum = Pager::$pager->getAllRecordsNum($sModelName, $filter);
-
-            $this->m_iAllRecordsNum = $iRecordsNum;
-            $this->m_previousFilter = $filter;
-        }
-        
-        return $this->m_iAllRecordsNum;
     }
 
 }

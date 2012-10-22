@@ -4,12 +4,13 @@ defined('DOCROOT') OR die('Brak bezpośredniego dostępu do pliku!');
 
 abstract class ApplicationModule {
     protected static $s_sDefaultController = 'DefaultControllerModule';
-    protected static $config;
-    protected static $lang;
+    protected static $properties = array();
     
     public static function init() {
         $sClassName = strtolower(get_called_class());
         Core::includeModuleFiles($sClassName);
+        if(empty(static::$properties[$sClassName]))
+            static::$properties[$sClassName] = array();
         static::loadConfig();
     }
     
@@ -28,27 +29,29 @@ abstract class ApplicationModule {
         $sClassName = strtolower(get_called_class());
         if(file_exists(DOCROOT.'config/modules/'.$sClassName.".php")) {
             require_once DOCROOT.'config/modules/'.$sClassName.".php";
-            static::$config = $config;
+            static::$properties[$sClassName]['config'] = $config;
         }
     }
     
     public static function config($sIndex) {
-        if(isset(static::$config[$sIndex]))
-            return static::$config[$sIndex];
+        $sClassName = strtolower(get_called_class());
+        if(isset(static::$properties[$sClassName]['config'][$sIndex]))
+            return static::$properties[$sClassName]['config'][$sIndex];
         else
             return null;
     }
     
-    public function setLanguage($sLanguage) {
+    public static function setLanguage($sLanguage) {
+        $sClassName = strtolower(get_called_class());
         if(file_exists(APPROOT.'modules/'.$sClassName."/lang/$sLanguage.php"))
             require_once APPROOT.'modules/'.$sClassName."/lang/$sLanguage.php";
-         $sClassName = strtolower(get_called_class());
-         $sLangClassName = $sClassName."Lang";
-         static::$lang = new $sLangClassName();
+         $sLangClassName = ucfirst($sClassName)."Lang";
+         return static::$properties[$sClassName]['language'] = new $sLangClassName();
     }
     
-    public function lang($sLangVariableName) {
-        return static::$lang->get($sLangVariableName);
+    public static function lang($sLangVariableName) {
+        $sClassName = strtolower(get_called_class());
+        return static::$properties[$sClassName]['language']->get($sLangVariableName);
     }
 }
 

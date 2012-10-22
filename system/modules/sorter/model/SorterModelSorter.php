@@ -24,7 +24,7 @@ class SorterModelSorter extends Model {
     function get($sSorterName) {
         $sorter = null;
 
-        $sorter = Session::$session->get('sorters-'.ms5($sSorterName));
+        $sorter = Session::$session->get('sorters-'.md5($sSorterName));
 
         return $sorter;
     }
